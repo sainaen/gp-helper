@@ -56,16 +56,32 @@
             return "0x" + digits.charAt(byte >> 4) + digits.charAt(byte & 0x0F);
         }
 
+        function padToByte(n) {
+            while (n.length < 8) {
+                n = "0" + n;
+            }
+            return n;
+        }
+
+        function formatBitmask(byte) {
+            return formatByte(byte) + (byte ? " (bits set: " + padToByte(byte.toString(2)).split("").reverse().reduce(function (result, bit, idx) {
+                if (bit == "1") {
+                    result += (result.length > 0 ? ", " : "") + idx;
+                }
+                return result;
+            }, "") + ")" : "");
+        }
+
         function formatByteArray(bytes) {
             return "[" + bytes.map(formatByte).join(", ") + "] (len: " + bytes.length + ")";
         }
 
         function formatAPDU(apdu) {
             var text = "\n\tCLA:\t" + formatByte(apdu.cla) +
-                "\n\tINS:\t" + formatByte(apdu.ins) +
-                "\n\tP1:\t" + formatByte(apdu.p1) +
-                "\n\tP2:\t" + formatByte(apdu.p2) +
-                "\n\tLc:\t" + formatByte(apdu.lc) +
+                "\n\tINS:\t" + formatBitmask(apdu.ins) +
+                "\n\tP1:\t" + formatBitmask(apdu.p1) +
+                "\n\tP2:\t" + formatBitmask(apdu.p2) +
+                "\n\tLc:\t" + formatByte(apdu.lc) + " (" + apdu.lc + ")" +
                 "\n\tData:\t" + formatByteArray(apdu.data);
             if ("mac" in apdu) {
                 text += "\n\tMAC:\t" + formatByteArray(apdu.mac);
