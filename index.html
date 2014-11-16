@@ -95,9 +95,35 @@
             return "[" + bytes.map(formatByte).join(", ") + "] (len: " + bytes.length + ")";
         }
 
+        function formatINS(byte) {
+            var inses = {
+                0xE4: "Delete",
+                0xF2: "Get Status",
+                0xE6: "Install",
+                0xE8: "Load",
+                0x70: "Manage Channel",
+                0xD8: "Put Key",
+                0xA4: "Select",
+                0xF0: "Set Status",
+                0xE2: "Store Data",
+                0x50: "Initialize Update",
+                0x82: "External Authenticate",
+                0x7A: "Begin R-MAC Session",
+                0x78: "End R-MAC Session",
+                0x84: "Get Challenge",
+                0xCA: "Get Data",
+                0xCB: "Get Data",
+                0x88: "Internal Authenticate",
+                0x22: "Manage Security Environment",
+                0x2A: "Perform Security Operation [decipher]"
+            };
+            var name = inses[byte];
+            return formatByte(byte) + " (" + (name || "Unknown INS") + ")";
+        }
+
         function formatAPDU(apdu) {
             var text = "\n\tCLA:\t" + formatByte(apdu.cla) +
-                "\n\tINS:\t" + formatByte(apdu.ins) +
+                "\n\tINS:\t" + formatINS(apdu.ins) +
                 "\n\tP1:\t" + formatBitmask(apdu.p1) +
                 "\n\tP2:\t" + formatBitmask(apdu.p2) +
                 "\n\tLc:\t" + formatByte(apdu.lc) + " (" + apdu.lc + ")" +
