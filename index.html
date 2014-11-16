@@ -56,15 +56,19 @@
             return digits.charAt(byte >> 4) + digits.charAt(byte & 0x0F);
         }
 
+        function formatByteArray(bytes) {
+            return "[" + bytes.map(formatByte).join(", ") + "] (len: " + bytes.length + ")";
+        }
+
         function formatAPDU(apdu) {
             var text = "\n\tCLA:\t" + formatByte(apdu.cla) +
                 "\n\tINS:\t" + formatByte(apdu.ins) +
                 "\n\tP1:\t" + formatByte(apdu.p1) +
                 "\n\tP2:\t" + formatByte(apdu.p2) +
                 "\n\tLc:\t" + formatByte(apdu.lc) +
-                "\n\tData:\t[" + apdu.data.map(formatByte).join(", ") + "]";
+                "\n\tData:\t" + formatByteArray(apdu.data);
             if ("mac" in apdu) {
-                text += "\n\tMAC:\t[" + apdu.mac.map(formatByte).join(", ") + "]";
+                text += "\n\tMAC:\t" + formatByteArray(apdu.mac);
             }
             if ("le" in apdu) {
                 text += "\n\tLe:\t" + formatByte(apdu.le)
@@ -90,7 +94,7 @@
                 try {
                     var bytes = splitIntoBytes(inStr);
                     var apdu = formAPDU(bytes);
-                    var text = "Bytes: [" + bytes.map(formatByte).join(", ") + "]\n";
+                    var text = "Bytes: " + formatByteArray(bytes) + "\n";
                     text += "Apdu: " + formatAPDU(apdu) + "\n";
 
                     $out.text(text);
