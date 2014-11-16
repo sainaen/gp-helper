@@ -28,7 +28,11 @@
         }
 
         function isGpAPDU(bytes) {
-            return bytes.length > 4;
+            return bytes[0] & 0x80 != 0 && bytes.length > 4;
+        }
+
+        function isSelectAPDU(bytes) {
+            return bytes[0] == 0 && bytes[1] == 0xA4 && bytes[2] == 0x04;
         }
 
         function formAPDU(bytes) {
@@ -59,9 +63,13 @@
             return apdu;
         }
 
-        function formatByte(byte) {
+        function formatByteSimple(byte) {
             var digits = "0123456789ABCDEF";
-            return "0x" + digits.charAt(byte >> 4) + digits.charAt(byte & 0x0F);
+            return digits.charAt(byte >> 4) + digits.charAt(byte & 0x0F);
+        }
+
+        function formatByte(byte) {
+            return "0x" + formatByteSimple(byte);
         }
 
         function padToByte(n) {
@@ -150,6 +158,15 @@
             return findSW(bytes).title;
         }
 
+        function formatAID(bytes) {
+            return bytes.map(formatByteSimple).join("");
+        }
+
+        function formatSelectAPDU(bytes) {
+            var lc = bytes[4];
+            return "Select AID " + formatAID(bytes.slice(5, 5+lc));
+        }
+
         $(function () {
             // onload
             var $in = $("#in");
@@ -169,6 +186,10 @@
                     var bytes = splitIntoBytes(inStr);
                     if (isGpAPDU(bytes)) {
                         $out.html("APDU: " + formatAPDU(formAPDU(bytes)) + "\n");
+                        return;
+                    }
+                    if (isSelectAPDU(bytes)) {
+                        $out.html("APDU: " + formatSelectAPDU(bytes) + "\n");
                         return;
                     }
                     if (isSW(bytes)){
