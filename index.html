@@ -53,7 +53,7 @@
 
         function formatByte(byte) {
             var digits = "0123456789ABCDEF";
-            return digits.charAt(byte >> 4) + digits.charAt(byte & 0x0F);
+            return "0x" + digits.charAt(byte >> 4) + digits.charAt(byte & 0x0F);
         }
 
         function formatByteArray(bytes) {
