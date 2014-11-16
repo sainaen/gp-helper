@@ -89,7 +89,7 @@
 
         function formatAPDU(apdu) {
             var text = "\n\tCLA:\t" + formatByte(apdu.cla) +
-                "\n\tINS:\t" + formatBitmask(apdu.ins) +
+                "\n\tINS:\t" + formatByte(apdu.ins) +
                 "\n\tP1:\t" + formatBitmask(apdu.p1) +
                 "\n\tP2:\t" + formatBitmask(apdu.p2) +
                 "\n\tLc:\t" + formatByte(apdu.lc) + " (" + apdu.lc + ")" +
