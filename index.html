@@ -73,6 +73,9 @@
         }
 
         function formatByteArray(bytes) {
+            if (bytes.length > 14) {
+                return "[" + bytes.slice(0, 10).map(formatByte).join(", ") + ", ..., " + bytes.slice(-4).map(formatByte).join(", ") + "] (len: " + bytes.length + ")";
+            }
             return "[" + bytes.map(formatByte).join(", ") + "] (len: " + bytes.length + ")";
         }
 
