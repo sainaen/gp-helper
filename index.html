@@ -110,10 +110,7 @@
                 try {
                     var bytes = splitIntoBytes(inStr);
                     var apdu = formAPDU(bytes);
-                    var text = "Bytes: " + formatByteArray(bytes) + "\n";
-                    text += "Apdu: " + formatAPDU(apdu) + "\n";
-
-                    $out.text(text);
+                    $out.text("APDU:" + formatAPDU(apdu) + "\n");
 
                 } catch (ex) {
                     console.error(ex);
