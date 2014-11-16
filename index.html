@@ -28,7 +28,7 @@
         }
 
         function isGpAPDU(bytes) {
-            return bytes[0] & 0x80 != 0 && bytes.length > 4;
+            return bytes[0] & 0x80 && bytes.length > 4;
         }
 
         function isSelectAPDU(bytes) {
