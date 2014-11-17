@@ -221,11 +221,7 @@
                     $out.text("Not a ByteString!");
                     return;
                 }
-                if (history.pushState) {
-                    history.pushState(null, null, "#" + inStr);
-                } else {
-                    location.hash = "#" + inStr;
-                }
+                location.replace(window.location.href.split('#')[0] + '#' + inStr);
                 try {
                     var bytes = splitIntoBytes(inStr);
                     if (isGpAPDU(bytes)) {
