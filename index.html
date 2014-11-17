@@ -121,7 +121,7 @@
             return formatByte(byte) + " (" + (name || "Unknown INS") + ")";
         }
 
-        function formatAPDU(apdu) {
+        function formatGenericAPDU(apdu) {
             var text = "\n\tCLA:\t" + formatByte(apdu.cla) +
                 "\n\tINS:\t" + formatINS(apdu.ins) +
                 "\n\tP1:\t" + formatBitmask(apdu.p1) +
@@ -135,6 +135,12 @@
                 text += "\n\tLe:\t" + formatByte(apdu.le)
             }
             return text;
+        }
+
+        function formatAPDU(apdu) {
+            var knownAPDUFormaters = {};
+
+            return (knownAPDUFormaters[apdu.ins] ? knownAPDUFormaters[apdu.ins](apdu) : formatGenericAPDU(apdu));
         }
 
         function formatSW(bytes) {
