@@ -208,6 +208,11 @@
                     $out.text("Not a ByteString!");
                     return;
                 }
+                if (history.pushState) {
+                    history.pushState(null, null, "#" + inStr);
+                } else {
+                    location.hash = "#" + inStr;
+                }
                 try {
                     var bytes = splitIntoBytes(inStr);
                     if (isGpAPDU(bytes)) {
@@ -233,6 +238,10 @@
                 var bytes = $more.data("bytes");
                 $more.replaceWith(bytes.map(formatByte).join(", "));
             });
+            if (window.location.hash) {
+                $in.val(window.location.hash.substr(1));
+                $("#inForm").submit();
+            }
         });
     </script>
 </head>
