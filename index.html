@@ -247,6 +247,12 @@
                 var bytes = $more.data("bytes");
                 $more.replaceWith(bytes.map(formatByte).join(", "));
             });
+            $(window).on("hashchange", function (e) {
+                if (window.location.hash) {
+                    $in.val(window.location.hash.substr(1));
+                    $inForm.submit();
+                }
+            });
             if (window.location.hash) {
                 $in.val(window.location.hash.substr(1));
                 $inForm.submit();
