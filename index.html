@@ -141,7 +141,8 @@
             var knownAPDUFormaters = {
                 0x82: function (extAuthApdu) {
                     var description = "\n\t<b>Description:</b> External Authenticate command which will authenticate host on the card<br/>\t\t     and set " +
-                            (extAuthApdu.p1 == 0x03 ? "the third security level (encryption + MAC)." : "the first security level (only MAC).");
+                            (extAuthApdu.p1 == 0x03 ? "the third security level (encryption + MAC)" : "the first security level (only MAC)") +
+                            "for the next APDUs";
                     return description + "\n" + formatGenericAPDU(apdu);
                 }
             };
