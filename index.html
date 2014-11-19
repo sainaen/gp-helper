@@ -79,7 +79,7 @@
             return n;
         }
 
-        function formatBitmask(byte) {
+        function formatBitset(byte) {
             return formatByte(byte) + (byte ? " (bits set: " + padToByte(byte.toString(2)).split("").reverse().reduce(function (result, bit, idx) {
                 if (bit == "1") {
                     result += (result.length > 0 ? ", " : "") + idx;
@@ -124,8 +124,8 @@
         function formatGenericAPDU(apdu) {
             var text = "\n\tCLA:\t" + formatByte(apdu.cla) +
                 "\n\tINS:\t" + formatINS(apdu.ins) +
-                "\n\tP1:\t" + formatBitmask(apdu.p1) +
-                "\n\tP2:\t" + formatBitmask(apdu.p2) +
+                "\n\tP1:\t" + formatBitset(apdu.p1) +
+                "\n\tP2:\t" + formatBitset(apdu.p2) +
                 "\n\tLc:\t" + formatByte(apdu.lc) + " (" + apdu.lc + ")" +
                 "\n\tData:\t" + formatByteArray(apdu.data);
             if ("mac" in apdu) {
