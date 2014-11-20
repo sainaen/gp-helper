@@ -90,7 +90,7 @@
 
         function formatByteArray(bytes) {
             if (bytes.length > 14) {
-                return "[" + bytes.slice(0, 10).map(formatByte).join(", ") + ", <a class='more' style='cursor: pointer' data-bytes='" + JSON.stringify(bytes.slice(10, -4)) + "'>...</a>, " + bytes.slice(-4).map(formatByte).join(", ") + "] (len: " + bytes.length + ")";
+                return "[" + bytes.slice(0, 8).map(formatByte).join(", ") + ", <a class='more' style='cursor: pointer' data-bytes='" + JSON.stringify(bytes.slice(8, -4)) + "'>...</a>, " + bytes.slice(-4).map(formatByte).join(", ") + "] (len: " + bytes.length + ")";
             }
             return "[" + bytes.map(formatByte).join(", ") + "] (len: " + bytes.length + ")";
         }
