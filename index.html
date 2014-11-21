@@ -10,6 +10,73 @@
     <script src="js/bootstrap.min.js"></script>
 
     <script>
+        var inses = {
+            0xE4: "Delete",
+            0xF2: "Get Status",
+            0xE6: "Install",
+            0xE8: "Load",
+            0x70: "Manage Channel",
+            0xD8: "Put Key",
+            0xA4: "Select",
+            0xF0: "Set Status",
+            0xE2: "Store Data",
+            0x50: "Initialize Update",
+            0x82: "External Authenticate",
+            0x7A: "Begin R-MAC Session",
+            0x78: "End R-MAC Session",
+            0x84: "Get Challenge",
+            0xCA: "Get Data",
+            0xCB: "Get Data",
+            0x88: "Internal Authenticate",
+            0x22: "Manage Security Environment",
+            0x2A: "Perform Security Operation [decipher]"
+        };
+
+        var sws = [
+            {sw1: 0x90, sw2: 0x00, title: "Success"},
+            {sw1: 0x61, sw2: -1, title: "Response data incomplete, more bytes available"},
+            {sw1: 0x62, sw2: 0x00, title: "Logical Channel already closed (manage channel)"},
+            {sw1: 0x62, sw2: 0x83, title: "Card Life Cycle State is CARD_LOCKED (select)"},
+            {sw1: 0x63, sw2: 0x00, title: "External auth: Authentication of host cryptogram failed, or Verification of certificate failed"},
+            {sw1: 0x63, sw2: 0x10, title: "More data available (get status)"},
+            {sw1: 0x64, sw2: 0x00, title: "No specific diagnosis"},
+            {sw1: 0x65, sw2: 0x81, title: "Memory failure"},
+            {sw1: 0x67, sw2: 0x00, title: "Wrong length in Lc"},
+            {sw1: 0x68, sw2: 0x81, title: "Logical channel not supported or is not active"},
+            {sw1: 0x68, sw2: 0x82, title: "Secure messaging not supported (manage channel, select)"},
+            {sw1: 0x68, sw2: 0x83, title: "The last command of the chain was expected (perform security operation)"},
+            {sw1: 0x69, sw2: 0x82, title: "Security status not satisfied"},
+            {sw1: 0x69, sw2: 0x85, title: "Conditions of use not satisfied"},
+            {sw1: 0x6A, sw2: 0x80, title: "Incorrect values in command data (delete, get status, install, set status, store data, internal auth)"},
+            {sw1: 0x6A, sw2: 0x81, title: "Function not supported e.g. card Life Cycle State is CARD_LOCKED (manage channel, select)"},
+            {sw1: 0x6A, sw2: 0x82, title: "Application/file not found (delete, select)"},
+            {sw1: 0x6A, sw2: 0x84, title: "Not enough memory space (install, load, put key, store data)"},
+            {sw1: 0x6A, sw2: 0x86, title: "Incorrect P1 P2"},
+            {sw1: 0x6A, sw2: 0x88, title: "Referenced data not found (delete, get data, get status, install, put key, set status, store data, init update, begin/end r-mac session)"},
+            {sw1: 0x6D, sw2: 0x00, title: "Instruction not supported or invalid"},
+            {sw1: 0x6E, sw2: 0x00, title: "Invalid class"},
+            {sw1: 0x6F, sw2: 0x00, title: "No specific diagnosis error (typically low level error, e.g. runtime exception)"},
+            {sw1: 0x94, sw2: 0x84, title: "Algorithm not supported (put key, external auth)"},
+            {sw1: 0x94, sw2: 0x85, title: "Invalid key check value (put key)"}
+        ];
+
+        function findSW(bytes) {
+            var generic;
+            for (var i = 0; i < sws.length; i++) {
+                if (sws[i].sw1 === bytes[0]) {
+                    if (sws[i].sw2 == -1) {
+                        generic = sws[i];
+                    } else if (sws[i].sw2 === bytes[1]) {
+                        return sws[i];
+                    }
+                }
+            }
+            if (generic) {
+                return generic;
+            }
+            throw new Error("Unknown SW!");
+        }
+
         function isByteString(str) {
             return str.length % 2 == 0 && /^[0-9a-fA-F]+$/.test(str);
         }
@@ -96,27 +163,6 @@
         }
 
         function formatINS(byte) {
-            var inses = {
-                0xE4: "Delete",
-                0xF2: "Get Status",
-                0xE6: "Install",
-                0xE8: "Load",
-                0x70: "Manage Channel",
-                0xD8: "Put Key",
-                0xA4: "Select",
-                0xF0: "Set Status",
-                0xE2: "Store Data",
-                0x50: "Initialize Update",
-                0x82: "External Authenticate",
-                0x7A: "Begin R-MAC Session",
-                0x78: "End R-MAC Session",
-                0x84: "Get Challenge",
-                0xCA: "Get Data",
-                0xCB: "Get Data",
-                0x88: "Internal Authenticate",
-                0x22: "Manage Security Environment",
-                0x2A: "Perform Security Operation [decipher]"
-            };
             var name = inses[byte];
             return formatByte(byte) + " (" + (name || "Unknown INS") + ")";
         }
@@ -151,50 +197,6 @@
         }
 
         function formatSW(bytes) {
-            var sws = [
-                {sw1: 0x90, sw2: 0x00, title: "Success"},
-                {sw1: 0x61, sw2: -1, title: "Response data incomplete, more bytes available"},
-                {sw1: 0x62, sw2: 0x00, title: "Logical Channel already closed (manage channel)"},
-                {sw1: 0x62, sw2: 0x83, title: "Card Life Cycle State is CARD_LOCKED (select)"},
-                {sw1: 0x63, sw2: 0x00, title: "External auth: Authentication of host cryptogram failed, or Verification of certificate failed"},
-                {sw1: 0x63, sw2: 0x10, title: "More data available (get status)"},
-                {sw1: 0x64, sw2: 0x00, title: "No specific diagnosis"},
-                {sw1: 0x65, sw2: 0x81, title: "Memory failure"},
-                {sw1: 0x67, sw2: 0x00, title: "Wrong length in Lc"},
-                {sw1: 0x68, sw2: 0x81, title: "Logical channel not supported or is not active"},
-                {sw1: 0x68, sw2: 0x82, title: "Secure messaging not supported (manage channel, select)"},
-                {sw1: 0x68, sw2: 0x83, title: "The last command of the chain was expected (perform security operation)"},
-                {sw1: 0x69, sw2: 0x82, title: "Security status not satisfied"},
-                {sw1: 0x69, sw2: 0x85, title: "Conditions of use not satisfied"},
-                {sw1: 0x6A, sw2: 0x80, title: "Incorrect values in command data (delete, get status, install, set status, store data, internal auth)"},
-                {sw1: 0x6A, sw2: 0x81, title: "Function not supported e.g. card Life Cycle State is CARD_LOCKED (manage channel, select)"},
-                {sw1: 0x6A, sw2: 0x82, title: "Application/file not found (delete, select)"},
-                {sw1: 0x6A, sw2: 0x84, title: "Not enough memory space (install, load, put key, store data)"},
-                {sw1: 0x6A, sw2: 0x86, title: "Incorrect P1 P2"},
-                {sw1: 0x6A, sw2: 0x88, title: "Referenced data not found (delete, get data, get status, install, put key, set status, store data, init update, begin/end r-mac session)"},
-                {sw1: 0x6D, sw2: 0x00, title: "Instruction not supported or invalid"},
-                {sw1: 0x6E, sw2: 0x00, title: "Invalid class"},
-                {sw1: 0x6F, sw2: 0x00, title: "No specific diagnosis error (typically low level error, e.g. runtime exception)"},
-                {sw1: 0x94, sw2: 0x84, title: "Algorithm not supported (put key, external auth)"},
-                {sw1: 0x94, sw2: 0x85, title: "Invalid key check value (put key)"}
-            ];
-            function findSW(bytes) {
-                var generic;
-                for (var i = 0; i < sws.length; i++) {
-                    if (sws[i].sw1 === bytes[0]) {
-                        if (sws[i].sw2 == -1) {
-                            generic = sws[i];
-                        } else if (sws[i].sw2 === bytes[1]) {
-                            return sws[i];
-                        }
-                    }
-                }
-                if (generic) {
-                    return generic;
-                }
-                throw new Error("Unknown SW!");
-            }
-
             return findSW(bytes).title;
         }
 
@@ -234,7 +236,7 @@
                         $out.html("APDU: " + formatSelectAPDU(bytes) + "\n");
                         return;
                     }
-                    if (isSW(bytes)){
+                    if (isSW(bytes)) {
                         $out.html("Status Word: " + formatSW(bytes) + "\n");
                         return;
                     }
