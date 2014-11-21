@@ -102,6 +102,10 @@
             return bytes[0] == 0 && bytes[1] == 0xA4 && bytes[2] == 0x04;
         }
 
+        function isINS(bytes) {
+            return bytes.length == 1 && inses[bytes[0]] != null;
+        }
+
         function formAPDU(bytes) {
             var apdu = {};
             if (!bytes[0] || (bytes[0] & 0x80) == 0) {
@@ -238,6 +242,10 @@
                     }
                     if (isSW(bytes)) {
                         $out.html("Status Word: " + formatSW(bytes) + "\n");
+                        return;
+                    }
+                    if (isINS(bytes)) {
+                        $out.html("GP Command: " + inses[bytes[0]] + "\n");
                         return;
                     }
                     $out.html("Unknown input!");
