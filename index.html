@@ -121,6 +121,10 @@
             return str.toUpperCase().split(/\s+/g).map(function sanitize(token) {
                 return token.replace("0X", "").replace(/[,.;]+/g, "").trim();
             }).reduce(function parse(result, token) {
+                if (token.indexOf(":") == -1) {
+                    console.warn("Wrong token", token);
+                    return result;
+                }
                 var parsedToken = token.split(":");
                 if (parsedToken[0] in knownTokens) {
                     var tokenProp = knownTokens[parsedToken[0]];
