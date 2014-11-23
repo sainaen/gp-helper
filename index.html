@@ -106,6 +106,35 @@
             return bytes.length == 1 && inses[bytes[0]] != null;
         }
 
+        function formTokenizedAPDU(str) {
+            var knownTokens = {
+                INS: {id: "ins"},
+                CLA: {id: "cla"},
+                DATA: {id: "data", long: true},
+                D: {id: "data", long: true},
+                MAC: {id: "mac", long: true},
+                LE: {id: "le"},
+                P1: {id: "p1"},
+                P2: {id: "p2"},
+                LC: {id: "lc"}
+            };
+            return str.toUpperCase().split(/\s+/g).map(function sanitize(token) {
+                return token.replace("0X", "").replace(/[,.;]+/g, "").trim();
+            }).reduce(function parse(result, token) {
+                var parsedToken = token.split(":");
+                if (parsedToken[0] in knownTokens) {
+                    var tokenProp = knownTokens[parsedToken[0]];
+                    if (tokenProp.id in result) {
+                        console.warn("Duplicate token", tokenProp.id);
+                    }
+                    result[tokenProp.id] = (tokenProp.long ? splitIntoBytes(parsedToken[1]) : parseInt(parsedToken[1], 16));
+                } else {
+                    console.warn("Unknown token", parsedToken[0])
+                }
+                return result;
+            }, {});
+        }
+
         function formAPDU(bytes) {
             var apdu = {};
             if (!bytes[0] || (bytes[0] & 0x80) == 0) {
@@ -214,6 +243,15 @@
             return "Select AID " + formatAID(bytes.slice(5, 5+lc));
         }
 
+        function isTokenizedAPDU(str) {
+            var capitalizedStr = str.toUpperCase();
+            return !!(capitalizedStr.indexOf("INS:") > -1
+            || capitalizedStr.indexOf("CLA:") > -1
+            || capitalizedStr.indexOf("DATA:") > -1
+            || capitalizedStr.indexOf("LC:") > -1
+            || capitalizedStr.indexOf("P1:") > -1);
+        }
+
         $(function () {
             // onload
             var $in = $("#in");
@@ -226,12 +264,16 @@
                     $out.text("Empty input!");
                     return;
                 }
-                if (!isByteString(inStr)) {
-                    $out.text("Not a ByteString!");
-                    return;
-                }
                 location.replace(window.location.href.split('#')[0] + '#' + inStr);
                 try {
+                    if (isTokenizedAPDU(inStr)) {
+                        $out.html("APDU: " + formatAPDU(formTokenizedAPDU(inStr)) + "\n");
+                        return;
+                    }
+                    if (!isByteString(inStr)) {
+                        $out.text("Not a ByteString!");
+                        return;
+                    }
                     var bytes = splitIntoBytes(inStr);
                     if (isGpAPDU(bytes)) {
                         $out.html("APDU: " + formatAPDU(formAPDU(bytes)) + "\n");
