@@ -252,8 +252,10 @@
             return !!(capitalizedStr.indexOf("INS:") > -1
             || capitalizedStr.indexOf("CLA:") > -1
             || capitalizedStr.indexOf("DATA:") > -1
+            || capitalizedStr.indexOf("MAC:") > -1
             || capitalizedStr.indexOf("LC:") > -1
-            || capitalizedStr.indexOf("P1:") > -1);
+            || capitalizedStr.indexOf("P1:") > -1
+            || capitalizedStr.indexOf("P2:") > -1);
         }
 
         $(function () {
@@ -271,7 +273,7 @@
                 location.replace(window.location.href.split('#')[0] + '#' + inStr);
                 try {
                     if (isTokenizedAPDU(inStr)) {
-                        $out.html("APDU: " + formatAPDU(formTokenizedAPDU(inStr)) + "\n");
+                        $out.html("APDU (parts): " + formatAPDU(formTokenizedAPDU(inStr)) + "\n");
                         return;
                     }
                     if (!isByteString(inStr)) {
