@@ -308,8 +308,11 @@
             });
             $(window).on("hashchange", function (e) {
                 if (window.location.hash) {
-                    $in.val(window.location.hash.substr(1));
-                    $inForm.submit();
+                    var newVal = window.location.hash.substr(1);
+                    if ($in.val() !== newVal) {
+                        $in.val(newVal);
+                        $inForm.submit();
+                    }
                 }
             });
             if (window.location.hash) {
