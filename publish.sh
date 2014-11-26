@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -e # stop at any error
 
 # trick to hide GitHub token in logs
 git config credential.helper "store --file=.git/credentials"
