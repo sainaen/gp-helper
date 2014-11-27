@@ -4,7 +4,6 @@ node_js:
 branches:
   only:
   - master
-install: true
 script: "./publish.sh"
 env:
   global:
