@@ -22,7 +22,7 @@ var inses = {
 
 var sws = [
     {sw1: 0x90, sw2: 0x00, title: "Success"},
-    {sw1: 0x61, sw2: -1,   title: "Response data incomplete, more bytes available"},
+    {sw1: 0x61,            title: "Response data incomplete, more bytes available"},
     {sw1: 0x62, sw2: 0x00, title: "Logical Channel already closed"},
     {sw1: 0x62, sw2: 0x83, title: "Card Life Cycle State is CARD_LOCKED"},
     {sw1: 0x63, sw2: 0x00, title: "External auth: Authentication of host cryptogram failed, or Verification of certificate failed"},
@@ -52,10 +52,11 @@ function findSW(bytes) {
     var generic;
     for (var i = 0; i < sws.length; i++) {
         if (sws[i].sw1 === bytes[0]) {
-            if (sws[i].sw2 == -1) {
-                generic = sws[i];
-            } else if (sws[i].sw2 === bytes[1]) {
+            if (sws[i].sw2 === bytes[1]) {
                 return sws[i];
+            }
+            if (!sws[i].sw2) {
+                generic = sws[i];
             }
         }
     }
