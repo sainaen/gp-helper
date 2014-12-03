@@ -247,6 +247,33 @@ function isTokenizedAPDU(str) {
     || capitalizedStr.indexOf("P2:") > -1);
 }
 
+function render(inStr) {
+    inStr = inStr.trim();
+    if (!inStr) {
+        throw "Empty input!";
+    }
+    if (isTokenizedAPDU(inStr)) {
+        return "APDU (parts): " + formatAPDU(formTokenizedAPDU(inStr)) + "\n";
+    }
+    if (!isByteString(inStr)) {
+        throw "Not a ByteString!";
+    }
+    var bytes = splitIntoBytes(inStr);
+    if (isGpAPDU(bytes)) {
+        return "APDU: " + formatAPDU(formAPDU(bytes)) + "\n";
+    }
+    if (isSelectAPDU(bytes)) {
+        return "APDU: " + formatSelectAPDU(bytes) + "\n";
+    }
+    if (isSW(bytes)) {
+        return "Status Word: " + formatSW(bytes) + "\n";
+    }
+    if (isINS(bytes)) {
+        return "GP Command: " + inses[bytes[0]] + "\n";
+    }
+    throw "Unknown input!";
+}
+
 $(function () {
     // onload
     var $in = $("#in");
@@ -254,39 +281,10 @@ $(function () {
     var $inForm = $("#inForm");
     $inForm.on("submit", function (e) {
         e.preventDefault();
-        var inStr = $in.val().trim();
-        if (!inStr) {
-            $out.text("Empty input!");
-            return;
-        }
-        location.replace(window.location.href.split('#')[0] + '#' + inStr);
+        var inStr = $in.val();
         try {
-            if (isTokenizedAPDU(inStr)) {
-                $out.html("APDU (parts): " + formatAPDU(formTokenizedAPDU(inStr)) + "\n");
-                return;
-            }
-            if (!isByteString(inStr)) {
-                $out.text("Not a ByteString!");
-                return;
-            }
-            var bytes = splitIntoBytes(inStr);
-            if (isGpAPDU(bytes)) {
-                $out.html("APDU: " + formatAPDU(formAPDU(bytes)) + "\n");
-                return;
-            }
-            if (isSelectAPDU(bytes)) {
-                $out.html("APDU: " + formatSelectAPDU(bytes) + "\n");
-                return;
-            }
-            if (isSW(bytes)) {
-                $out.html("Status Word: " + formatSW(bytes) + "\n");
-                return;
-            }
-            if (isINS(bytes)) {
-                $out.html("GP Command: " + inses[bytes[0]] + "\n");
-                return;
-            }
-            $out.html("Unknown input!");
+            $out.html(render(inStr));
+            location.replace(window.location.href.split('#')[0] + '#' + inStr);
         } catch (ex) {
             console.error(ex);
             $out.html(ex);
