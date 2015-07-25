@@ -5,6 +5,7 @@ branches:
   only:
   - master
 script: "./publish.sh"
+sudo: false
 env:
   global:
     secure: TEdy/rMfZpUdnur0/NAVV3wXsOnKO5QYSR8Op3X6YtKNZ1OgSGGXPNWiOBBiFfV9Dbh1T/MLNbsYE72XUx69eUmyhs6UkXQj1BJSV9tWIYT+qiJQYV1BL5aeAkliSs9hZz35eyg/c48YQqBRPYheA4L62IZtFfWmTsJfVa/rTNM=
