@@ -15,9 +15,12 @@ cd $repoFolder
 git config credential.helper "store --file=.git/credentials"
 echo "https://$GH_TOKEN:@github.com" > .git/credentials
 
+# configure commit author
+git config user.email "bot@travis-ci.com"
+git config user.name "Travis-CI Bot"
 # commit changes
 git add --all
-git commit --author="Travis-CI bot <bot@travis-ci.com>" --message="Update the site"
+git commit --message="Update the site"
 
 # push latest commit in current branch to `gh-pages`
 git push $repoUrl HEAD:gh-pages
