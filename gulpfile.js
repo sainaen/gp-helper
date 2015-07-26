@@ -9,7 +9,7 @@ const target = "build";
 
 gulp.task("js", function () {
     return browserify({entries: `${source}/js/app.js`, debug: true})
-        .transform(babelify)
+        .transform(babelify.configure({sourceMapRelative: `${__dirname}/`}))
         .bundle()
         .pipe(src("app.js"))
         .pipe(gulp.dest(`${target}/js`));
