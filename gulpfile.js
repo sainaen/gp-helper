@@ -1,30 +1,33 @@
-var gulp = require("gulp");
-var clean = require("gulp-clean");
-var browserify = require("browserify");
-var source = require("vinyl-source-stream");
+const gulp = require("gulp");
+const clean = require("gulp-clean");
+const browserify = require("browserify");
+const src = require("vinyl-source-stream");
+
+const source = "src";
+const target = "build";
 
 gulp.task("js", function () {
-	return browserify("src/js/app.js", {debug: true})
-		.bundle()
-		.pipe(source("app.js"))
-		.pipe(gulp.dest("build/js"));
+    return browserify({entries: `${source}/js/app.js`, debug: true})
+        .bundle()
+        .pipe(src("app.js"))
+        .pipe(gulp.dest(`${target}/js`));
 });
 
 gulp.task("files", function () {
-	return gulp.src("src/files/**/*")
-		.pipe(gulp.dest("build"));
+    return gulp.src(`${source}/files/**/*`)
+        .pipe(gulp.dest(target));
 });
 
 gulp.task("clean", function () {
-	return gulp.src("build")
-		.pipe(clean());
+    return gulp.src("build")
+        .pipe(clean());
 });
 
 gulp.task("default", ["clean"], function () {
-	gulp.start("js", "files");
+    gulp.start("js", "files");
 });
 
 gulp.task("watch", ["default"], function () {
-	gulp.watch("src/js/**/*.js", ["js"]);
-	gulp.watch("src/files/**/*", ["files"]);
+    gulp.watch(`${source}/js/**/*.js`, ["js"]);
+    gulp.watch(`${source}/files/**/*`, ["files"]);
 });
