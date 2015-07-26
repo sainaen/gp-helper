@@ -1,5 +1,5 @@
 const gulp = require("gulp");
-const clean = require("gulp-clean");
+const del = require("del");
 const browserify = require("browserify");
 const src = require("vinyl-source-stream");
 
@@ -18,9 +18,8 @@ gulp.task("files", function () {
         .pipe(gulp.dest(target));
 });
 
-gulp.task("clean", function () {
-    return gulp.src("build")
-        .pipe(clean());
+gulp.task("clean", function (cb) {
+    del(target, cb);
 });
 
 gulp.task("default", ["clean"], function () {
