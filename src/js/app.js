@@ -1,6 +1,4 @@
-var data = require("./data");
-var sws = data.sws;
-var inses = data.inses;
+const {sws, inses} = require("./data");
 
 function findSW(bytes) {
     var generic;
