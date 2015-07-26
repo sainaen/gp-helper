@@ -1,7 +1,7 @@
-const {sws, inses} = require("./gp-helper-data");
-exports.inses = inses;
+import {sws, inses as _inses, SWInfo} from "./gp-helper-data";
+export var inses = _inses;
 
-function findSW(bytes) {
+function findSW(bytes: number[]): SWInfo {
     var generic;
     for (var i = 0; i < sws.length; i++) {
         if (sws[i].sw1 === bytes[0]) {
@@ -19,12 +19,11 @@ function findSW(bytes) {
     throw new Error("Unknown SW!");
 }
 
-function isByteString(str) {
+export function isByteString(str: string): boolean {
     return str.length % 2 == 0 && /^[0-9a-fA-F]+$/.test(str);
 }
-exports.isByteString = isByteString;
 
-function splitIntoBytes(str) {
+export function splitIntoBytes(str: string): number[] {
     var result = [];
     while (str) {
         result.push(parseInt(str.substr(0, 2), 16));
@@ -32,29 +31,36 @@ function splitIntoBytes(str) {
     }
     return result;
 }
-exports.splitIntoBytes = splitIntoBytes;
 
-function isSW(bytes) {
+export function isSW(bytes) {
     return bytes.length == 2;
 }
-exports.isSW = isSW;
 
-function isGpAPDU(bytes) {
+export function isGpAPDU(bytes) {
     return bytes[0] & 0x80 && bytes.length > 4;
 }
-exports.isGpAPDU = isGpAPDU;
 
-function isSelectAPDU(bytes) {
+export function isSelectAPDU(bytes) {
     return bytes[0] == 0 && bytes[1] == 0xA4 && bytes[2] == 0x04;
 }
-exports.isSelectAPDU = isSelectAPDU;
 
-function isINS(bytes) {
+export function isINS(bytes) {
     return bytes.length == 1 && inses[bytes[0]] != null;
 }
-exports.isINS = isINS;
 
-function formTokenizedAPDU(str) {
+class APDU {
+    cla: number;
+    ins: number;
+    p1: number;
+    p2: number;
+    lc: number;
+    data: number[];
+    security: boolean;
+    mac: number[];
+    le: number;
+}
+
+export function formTokenizedAPDU(str) {
     var knownTokens = {
         INS: {id: "ins"},
         CLA: {id: "cla"},
@@ -86,10 +92,9 @@ function formTokenizedAPDU(str) {
         return result;
     }, {});
 }
-exports.formTokenizedAPDU = formTokenizedAPDU;
 
-function formAPDU(bytes) {
-    var apdu = {};
+export function formAPDU(bytes) {
+    var apdu: APDU = new APDU();
     if (!bytes[0] || (bytes[0] & 0x80) == 0) {
         throw new Error("Not a GP Card Command!");
     }
@@ -115,17 +120,15 @@ function formAPDU(bytes) {
     }
     return apdu;
 }
-exports.formAPDU = formAPDU;
 
 function formatByteSimple(byte) {
     var digits = "0123456789ABCDEF";
     return digits.charAt(byte >> 4) + digits.charAt(byte & 0x0F);
 }
 
-function formatByte(byte) {
+export function formatByte(byte) {
     return "0x" + formatByteSimple(byte);
 }
-exports.formatByte = formatByte;
 
 function padToByte(n) {
     while (n.length < 8) {
@@ -172,7 +175,7 @@ function formatGenericAPDU(apdu) {
     return text;
 }
 
-function formatAPDU(apdu) {
+export function formatAPDU(apdu) {
     var knownAPDUFormaters = {
         0x82: function (extAuthApdu) {
             var description = "\n\t<b>Description:</b> External Authenticate command which will authenticate host on the card<br/>\t\t     and set " +
@@ -184,24 +187,21 @@ function formatAPDU(apdu) {
 
     return (knownAPDUFormaters[apdu.ins] ? knownAPDUFormaters[apdu.ins](apdu) : formatGenericAPDU(apdu));
 }
-exports.formatAPDU = formatAPDU;
 
-function formatSW(bytes) {
+export function formatSW(bytes: number[]): string {
     return findSW(bytes).title;
 }
-exports.formatSW = formatSW;
 
-function formatAID(bytes) {
+function formatAID(bytes: number[]): string {
     return bytes.map(formatByteSimple).join("");
 }
 
-function formatSelectAPDU(bytes) {
+export function formatSelectAPDU(bytes: number[]): string {
     var lc = bytes[4];
     return "Select AID " + formatAID(bytes.slice(5, 5+lc));
 }
-exports.formatSelectAPDU = formatSelectAPDU;
 
-function isTokenizedAPDU(str) {
+export function isTokenizedAPDU(str: string): boolean {
     var capitalizedStr = str.toUpperCase();
     return !!(capitalizedStr.indexOf("INS:") > -1
     || capitalizedStr.indexOf("CLA:") > -1
@@ -211,4 +211,3 @@ function isTokenizedAPDU(str) {
     || capitalizedStr.indexOf("P1:") > -1
     || capitalizedStr.indexOf("P2:") > -1);
 }
-exports.isTokenizedAPDU = isTokenizedAPDU;
