@@ -21,7 +21,7 @@ gulp.task("files", function () {
 });
 
 gulp.task("clean", function (cb) {
-    del(target, cb);
+    del(`${target}/*`, cb);
 });
 
 gulp.task("default", ["clean"], function () {
