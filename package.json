@@ -1,0 +1,20 @@
+{
+  "name": "gp-helper",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sainaen/gp-helper.git"
+  },
+  "author": "sainaen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sainaen/gp-helper/issues"
+  },
+  "homepage": "https://sainaen.github.io/gp-helper",
+  "devDependencies": {
+    "browserify": "^11.0.0",
+    "gulp": "^3.9.0",
+    "gulp-clean": "^0.3.1",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}
